@@ -71,7 +71,7 @@ public class MainService {
 
     public MailDto display(File emlFile, int number) {
         try {
-            System.out.printf("File - %s =====================\n", number);
+//            System.out.printf(,"File - %s =====================\n" number);
 
             MimeMessage message = new MimeMessage(null, new FileInputStream(emlFile));
 
@@ -80,24 +80,32 @@ public class MainService {
             String copy = message.getHeader("CC", ",");
             String subject = message.getSubject();
             String date = message.getHeader("Date", ",");
+            String replyTo = message.getHeader("in-reply-to", ",");
+            String references = message.getHeader("reference", ",");
+
             String body = "";
 
             if(message.isMimeType("text/plain")) {
                 body = message.getContent().toString();
             } else if(message.isMimeType("multipart/*")) {
-                MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
-                body = getTextFromMimeMultipart(mimeMultipart);
+                try {
+                    MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+                    body = getTextFromMimeMultipart(mimeMultipart);
+                } catch (Exception e) {
+                    body = null;
+                }
             }
 
-            System.out.println(body);
             return MailDto.builder()
                     .id(number)
                     .from(replaceCommaInString(from))
                     .to(replaceCommaInString(to))
                     .copy(replaceCommaInString(copy))
+                    .body(replaceCommaInString(body))
                     .subject(replaceCommaInString(subject))
                     .date(replaceCommaInString(date))
-                    .body(replaceCommaInString(body))
+                    .inReplyTo(replaceCommaInString(replyTo))
+                    .references(replaceCommaInString(references))
                     .build();
 
         } catch (Exception e) {

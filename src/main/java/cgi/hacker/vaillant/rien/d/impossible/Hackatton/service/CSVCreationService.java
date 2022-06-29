@@ -14,28 +14,32 @@ import java.util.List;
 public class CSVCreationService {
 
     private static final String fileName = "input.csv";
+    private static final String TITLE_CONTENT = "id,from,to,cc,subject,body,date,reply,references";
 
     //List d'objet en entrée -> sortir fichier csv.
-    public File createCSVFromData(List<MailDto> mailDtos) throws FileNotFoundException {
-        File csvInputFile = new File(fileName);
-        try(PrintWriter pw = new PrintWriter(csvInputFile)) {
+    public void createCSVFromData(List<MailDto> mailDtos) throws FileNotFoundException {
+        try(PrintWriter pw = new PrintWriter(new File(fileName))) {
             //Add title wanted by sam
-            pw.println("id,from,to,cc,subject,body,date");
+            pw.println(TITLE_CONTENT);
             //stream on list -> convert into a list a string separate by | and print pw::printLn
-            mailDtos.forEach(mail -> pw.println(getLine(mail)));
+            mailDtos.forEach(mail -> {
+            System.out.printf("File - %s =====================\n", mail.getId());
+                pw.println(getLine(mail));
+            });
         }
-        return csvInputFile;
     }
 
     private String getLine(MailDto mailDto) {
         return String.format(
-                "%s,%s,%s,%s,%s,%s,%s",
+                "%s,".repeat(TITLE_CONTENT.split(",").length - 1).concat("%s"),
                 mailDto.getId(),
                 mailDto.getFrom(),
                 mailDto.getTo(),
                 mailDto.getCopy(),
                 mailDto.getSubject(),
                 mailDto.getBody(),
-                mailDto.getDate()).replaceAll("\t", "").replaceAll("(?:\\n|\\r)", "");
+                mailDto.getDate(),
+                mailDto.getInReplyTo(),
+                mailDto.getReferences()).replaceAll("\t", "").replaceAll("(?:\\n|\\r)", "");
     }
 }
