@@ -3,6 +3,7 @@ package cgi.hacker.vaillant.rien.d.impossible.Hackatton.service;
 import cgi.hacker.vaillant.rien.d.impossible.Hackatton.dto.MailDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class MainService {
