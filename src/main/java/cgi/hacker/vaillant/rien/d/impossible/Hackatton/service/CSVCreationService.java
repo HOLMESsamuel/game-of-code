@@ -2,35 +2,36 @@ package cgi.hacker.vaillant.rien.d.impossible.Hackatton.service;
 
 import cgi.hacker.vaillant.rien.d.impossible.Hackatton.dto.MailDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import static java.lang.String.format;
+
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CSVCreationService {
 
     private static final String fileName = "input.csv";
     private static final String TITLE_CONTENT = "id,from,to,cc,subject,body,date,reply,references";
 
-    //List d'objet en entrée -> sortir fichier csv.
     public void createCSVFromData(List<MailDto> mailDtos) throws FileNotFoundException {
-        try(PrintWriter pw = new PrintWriter(new File(fileName))) {
-            //Add title wanted by sam
+        try(PrintWriter pw = new PrintWriter(fileName)) {
             pw.println(TITLE_CONTENT);
             //stream on list -> convert into a list a string separate by | and print pw::printLn
             mailDtos.forEach(mail -> {
-            System.out.printf("File - %s =====================\n", mail.getId());
+                log.info("File - {} =====================\n", mail.getId());
                 pw.println(getLine(mail));
             });
         }
     }
 
     private String getLine(MailDto mailDto) {
-        return String.format(
+        return format(
                 "%s,".repeat(TITLE_CONTENT.split(",").length - 1).concat("%s"),
                 mailDto.getId(),
                 mailDto.getFrom(),
