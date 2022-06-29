@@ -75,6 +75,7 @@ public class MainService {
             String to = message.getHeader("To", ",");
             String copy = message.getHeader("CC", ",");
             String subject = message.getSubject();
+            String date = message.getHeader("Date", ",");
 
             return MailDto.builder()
                     .id(number)
@@ -82,7 +83,7 @@ public class MainService {
                     .to(to != null && to.contains(",") ? to.replaceAll(",", "|") : to)
                     .copy(copy != null && copy.contains(",") ? copy.replaceAll(",", "|") : copy)
                     .subject(subject != null && subject.contains(",") ? subject.replaceAll(",", "") : subject)
-                    .date(message.getHeader("Date", ","))
+                    .date(date != null && date.contains(",") ? date.replaceAll(",", ""): date)
                     .build();
 
         } catch (Exception e) {

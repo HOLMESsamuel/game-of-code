@@ -29,12 +29,12 @@ public class CSVCreationService {
 
     private String getLine(MailDto mailDto) {
         return String.format(
-                "%s , %s , %s , %s , %s , %s",
+                "%s,%s,%s,%s,%s,%s",
                 mailDto.getId(),
                 mailDto.getFrom(),
                 mailDto.getTo(),
                 mailDto.getCopy(),
                 mailDto.getSubject(),
-                mailDto.getDate());
+                mailDto.getDate()).replaceAll("\t", "").replaceAll("(?:\\n|\\r)", "");
     }
 }
