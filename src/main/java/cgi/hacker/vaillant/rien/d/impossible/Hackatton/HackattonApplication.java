@@ -9,26 +9,31 @@ import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 
 @SpringBootApplication
 @RequiredArgsConstructor
 public class HackattonApplication {
 
+    //TODO: IMPROVE, will not work on a war
+    private static final String RESOURCE_FOLDER = "src/main/resources/emls";
     private static final CSVCreationService service = new CSVCreationService();
-    private static String personalPath = "C:\\Users\\marciodiogo.antunesd\\Desktop\\p-nik_sent\\p-nik_sent";
 
     public static void main(String[] args) throws FileNotFoundException {
-        File path = new File(personalPath);
+        createCSV(new File(args.length != 0 ? args[0]: RESOURCE_FOLDER));
+    }
+
+    public static void createCSV(File path) throws FileNotFoundException {
         File[] files = path.listFiles();
         AtomicInteger counter = new AtomicInteger(1);
 
         if (files != null && files.length > 0) {
-            service.createCSVFromData(Arrays.stream(files)
+            service.createCSVFromData(stream(files)
                     .map(file -> display(file.getAbsoluteFile(), counter.getAndIncrement()))
-                    .collect(Collectors.toList()));
+                    .collect(toList()));
         } else {
             System.out.println("\n===================");
             System.out.println("No mails to be parsed");
