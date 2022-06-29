@@ -56,6 +56,12 @@
 			<artifactId>jython</artifactId>
 			<version>2.7.2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.aspose</groupId>
+			<artifactId>aspose-email</artifactId>
+			<version>21.3</version>
+			<classifier>jdk16</classifier>
+		</dependency>
 	</dependencies>
 
 	<build>

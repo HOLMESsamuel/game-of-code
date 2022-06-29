@@ -1,10 +1,9 @@
 package cgi.hacker.vaillant.rien.d.impossible.Hackatton;
 
-import cgi.hacker.vaillant.rien.d.impossible.Hackatton.service.CSVCreationService;
-import cgi.hacker.vaillant.rien.d.impossible.Hackatton.service.MainService;
-import cgi.hacker.vaillant.rien.d.impossible.Hackatton.service.MessageService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import cgi.hacker.vaillant.rien.d.impossible.Hackatton.service.*;
+import lombok.RequiredArgsConstructor;
 
 @SpringBootApplication
 @RequiredArgsConstructor
