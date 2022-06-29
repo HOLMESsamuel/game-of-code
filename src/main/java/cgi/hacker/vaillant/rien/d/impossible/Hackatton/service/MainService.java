@@ -68,6 +68,7 @@ public class MainService {
 
     public MailDto display(File emlFile, int number) {
         try {
+            log.info("---- READ NUMBER {} ----", number);
             return messageService.createMailDtoFromMessage(new MimeMessage(null, new FileInputStream(emlFile)), number);
         } catch (MessagingException | IOException e) {
             //TODO: improve if necessary

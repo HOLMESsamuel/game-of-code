@@ -29,8 +29,8 @@ public class MessageService {
                 .body(replaceCommaInString(getBody(message), EMPTY_REPLACEMENT))
                 .subject(replaceCommaInString(message.getSubject(), OR_REPLACEMENT))
                 .date(replaceCommaInString(message.getHeader("Date", COMMA_SEPARATOR), OR_REPLACEMENT))
-                .inReplyTo(replaceCommaInString(message.getHeader("in-reply-to", COMMA_SEPARATOR), OR_REPLACEMENT))
-                .references(replaceCommaInString(message.getHeader("reference", COMMA_SEPARATOR), OR_REPLACEMENT))
+                .inReplyTo(replaceCommaInString(message.getHeader("In-Reply-To", COMMA_SEPARATOR), OR_REPLACEMENT))
+                .references(replaceCommaInString(message.getHeader("References", COMMA_SEPARATOR), OR_REPLACEMENT))
                 .build();
     }
 
