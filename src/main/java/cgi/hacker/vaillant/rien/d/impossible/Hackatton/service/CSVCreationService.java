@@ -20,7 +20,7 @@ public class CSVCreationService {
         File csvInputFile = new File(fileName);
         try(PrintWriter pw = new PrintWriter(csvInputFile)) {
             //Add title wanted by sam
-            pw.println("id , from , to , cc , subject , date");
+            pw.println("id,from,to,cc,subject,date");
             //stream on list -> convert into a list a string separate by | and print pw::printLn
             mailDtos.forEach(mail -> pw.println(getLine(mail)));
         }
