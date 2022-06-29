@@ -13,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Objects.nonNull;
@@ -23,6 +25,8 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class MainService {
 
+    private static final int THREAD_NUMBER = 10;
+
     private final CSVCreationService service;
     private final MessageService messageService;
 
@@ -32,20 +36,23 @@ public class MainService {
     public void generatedCSVFile(String[] args) {
         try {
             createCSV(String.valueOf(new File(args.length != 0 ? args[0] : RESOURCE_FOLDER)));
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             log.error("File not found");
         }
     }
 
-    private void createCSV(final String directory) throws FileNotFoundException {
+    private void createCSV(final String directory) throws FileNotFoundException, ExecutionException, InterruptedException {
         List<File> fileList = listFiles(directory);
 
         AtomicInteger counter = new AtomicInteger(1);
 
         if (fileList.size() > 0) {
-            service.createCSVFromData(fileList.stream()
+            ForkJoinPool customThreadPool = new ForkJoinPool(THREAD_NUMBER);
+            List<MailDto> mailDtos = customThreadPool.submit(() -> fileList.parallelStream()
                     .map(file -> display(file.getAbsoluteFile(), counter.getAndIncrement()))
-                    .collect(toList()));
+                    .collect(toList())).get();
+            customThreadPool.shutdown();
+            service.createCSVFromData(mailDtos);
         } else {
             log.info("No mails to be parsed");
         }
