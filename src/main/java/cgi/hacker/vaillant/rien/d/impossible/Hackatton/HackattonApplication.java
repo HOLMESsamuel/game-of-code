@@ -1,46 +1,59 @@
 package cgi.hacker.vaillant.rien.d.impossible.Hackatton;
 
+import cgi.hacker.vaillant.rien.d.impossible.Hackatton.csv.CSVCreationService;
+import cgi.hacker.vaillant.rien.d.impossible.Hackatton.dto.MailDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.core.io.ClassPathResource;
 
-import java.util.*;
-import java.io.*;
-import javax.mail.*;
-import javax.mail.internet.*;
+import javax.mail.internet.MimeMessage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
+@RequiredArgsConstructor
 public class HackattonApplication {
 
-    public static void main(String[] args) throws Exception {
-        try {
-            int counter = 0;
+    private static final CSVCreationService service = new CSVCreationService();
+    private static String personalPath = "C:\\Users\\marciodiogo.antunesd\\Desktop\\p-nik_sent\\p-nik_sent";
 
-            while (true) {
-                display(new ClassPathResource(String.format("emls/%s.eml", counter)).getFile(), counter);
+    public static void main(String[] args) throws FileNotFoundException {
+        File path = new File(personalPath);
+        File[] files = path.listFiles();
+        AtomicInteger counter = new AtomicInteger(1);
 
-                counter++;
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("\n==========================");
-            System.out.println("No more mails to be parsed");
-            System.out.println("==========================");
+        if (files != null && files.length > 0) {
+            service.createCSVFromData(Arrays.stream(files)
+                    .map(file -> display(file.getAbsoluteFile(), counter.getAndIncrement()))
+                    .collect(Collectors.toList()));
+        } else {
+            System.out.println("\n===================");
+            System.out.println("No mails to be parsed");
+            System.out.println("=====================");
         }
     }
 
-    public static void display(File emlFile, int number) throws Exception {
-        System.out.printf("\n\nFile - %s =====================\n", number);
-        Properties props = System.getProperties();
-        props.put("mail.host", "smtp.dummydomain.com");
-        props.put("mail.transport.protocol", "smtp");
+    public static MailDto display(File emlFile, int number) {
+        try {
+            System.out.printf("File - %s =====================\n", number);
 
-        Session mailSession = Session.getDefaultInstance(props, null);
-        InputStream source = new FileInputStream(emlFile);
-        MimeMessage message = new MimeMessage(mailSession, source);
+            MimeMessage message = new MimeMessage(null, new FileInputStream(emlFile));
 
-//        System.out.println("Header - from : " + message.getHeader("From", ","));
-        System.out.println("From : " + message.getFrom()[0]);
-        System.out.println("Subject : " + message.getSubject());
-        System.out.println("--------------");
-        System.out.println("Body : " +  message.getContent());
+            return MailDto.builder()
+                    .id(number)
+                    .from(message.getHeader("From", ","))
+                    .to(message.getHeader("To", ","))
+                    .copy(message.getHeader("CC", ","))
+                    .subject(message.getSubject())
+                    .date(message.getHeader("Date", ","))
+                    .build();
+
+        } catch (Exception e) {
+            // Error
+            return null;
+        }
     }
 }
