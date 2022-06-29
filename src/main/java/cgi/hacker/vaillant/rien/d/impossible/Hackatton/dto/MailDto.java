@@ -9,6 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 public class MailDto {
 
-    private String from, to, copy, subject, date, inReplyTo;
+    private String from, to, copy, subject, date, inReplyTo, body;
     private int id;
 }

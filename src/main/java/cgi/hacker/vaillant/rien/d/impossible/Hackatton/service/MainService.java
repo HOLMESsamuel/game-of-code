@@ -3,10 +3,14 @@ package cgi.hacker.vaillant.rien.d.impossible.Hackatton.service;
 import cgi.hacker.vaillant.rien.d.impossible.Hackatton.dto.MailDto;
 import lombok.RequiredArgsConstructor;
 
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,19 +80,49 @@ public class MainService {
             String copy = message.getHeader("CC", ",");
             String subject = message.getSubject();
             String date = message.getHeader("Date", ",");
+            String body = "";
 
+            if(message.isMimeType("text/plain")) {
+                body = message.getContent().toString();
+            } else if(message.isMimeType("multipart/*")) {
+                MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+                body = getTextFromMimeMultipart(mimeMultipart);
+            }
+
+            System.out.println(body);
             return MailDto.builder()
                     .id(number)
-                    .from(from != null && from.contains(",") ? from.replaceAll(",", "|") : from)
-                    .to(to != null && to.contains(",") ? to.replaceAll(",", "|") : to)
-                    .copy(copy != null && copy.contains(",") ? copy.replaceAll(",", "|") : copy)
-                    .subject(subject != null && subject.contains(",") ? subject.replaceAll(",", "") : subject)
-                    .date(date != null && date.contains(",") ? date.replaceAll(",", ""): date)
+                    .from(replaceCommaInString(from))
+                    .to(replaceCommaInString(to))
+                    .copy(replaceCommaInString(copy))
+                    .subject(replaceCommaInString(subject))
+                    .date(replaceCommaInString(date))
+                    .body(replaceCommaInString(body))
                     .build();
 
         } catch (Exception e) {
             // Error
             return null;
         }
+    }
+
+    private String replaceCommaInString(String text) {
+        return text != null && text.contains(",") ? text.replaceAll(",", "") : text;
+    }
+
+    private String getTextFromMimeMultipart(
+            MimeMultipart mimeMultipart)  throws MessagingException, IOException {
+        String result = "";
+        int count = mimeMultipart.getCount();
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+            if (bodyPart.isMimeType("text/plain")) {
+                result = result + "\n" + bodyPart.getContent();
+                break; // without break same text appears twice in my tests
+            } else if (bodyPart.getContent() instanceof MimeMultipart){
+                result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+            }
+        }
+        return result;
     }
 }
