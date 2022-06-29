@@ -1,4 +1,4 @@
-package cgi.hacker.vaillant.rien.d.impossible.Hackatton.csv;
+package cgi.hacker.vaillant.rien.d.impossible.Hackatton.service;
 
 import cgi.hacker.vaillant.rien.d.impossible.Hackatton.dto.MailDto;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class CSVCreationService {
         File csvInputFile = new File(fileName);
         try(PrintWriter pw = new PrintWriter(csvInputFile)) {
             //Add title wanted by sam
-            pw.println("id | from | to | cc | subject | date");
+            pw.println("id , from , to , cc , subject , date");
             //stream on list -> convert into a list a string separate by | and print pw::printLn
             mailDtos.forEach(mail -> pw.println(getLine(mail)));
         }
@@ -29,7 +29,7 @@ public class CSVCreationService {
 
     private String getLine(MailDto mailDto) {
         return String.format(
-                "%s | %s | %s | %s | %s | %s",
+                "%s , %s , %s , %s , %s , %s",
                 mailDto.getId(),
                 mailDto.getFrom(),
                 mailDto.getTo(),

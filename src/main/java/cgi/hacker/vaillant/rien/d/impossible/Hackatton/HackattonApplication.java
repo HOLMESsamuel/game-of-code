@@ -1,6 +1,6 @@
 package cgi.hacker.vaillant.rien.d.impossible.Hackatton;
 
-import cgi.hacker.vaillant.rien.d.impossible.Hackatton.csv.CSVCreationService;
+import cgi.hacker.vaillant.rien.d.impossible.Hackatton.service.CSVCreationService;
 import cgi.hacker.vaillant.rien.d.impossible.Hackatton.dto.MailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -47,11 +47,15 @@ public class HackattonApplication {
 
             MimeMessage message = new MimeMessage(null, new FileInputStream(emlFile));
 
+            String from = message.getHeader("From", ",");
+            String to = message.getHeader("To", ",");
+            String copy = message.getHeader("CC", ",");
+
             return MailDto.builder()
                     .id(number)
-                    .from(message.getHeader("From", ","))
-                    .to(message.getHeader("To", ","))
-                    .copy(message.getHeader("CC", ","))
+                    .from(from != null && from.contains(",") ? from.replaceAll(",", "|") : from)
+                    .to(to != null && to.contains(",") ? to.replaceAll(",", "|") : to)
+                    .copy(copy != null && copy.contains(",") ? copy.replaceAll(",", "|") : copy)
                     .subject(message.getSubject())
                     .date(message.getHeader("Date", ","))
                     .build();
