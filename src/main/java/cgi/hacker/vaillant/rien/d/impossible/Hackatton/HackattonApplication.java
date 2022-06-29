@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class HackattonApplication {
 
     private static final CSVCreationService service = new CSVCreationService();
-    private static String personalPath = "C:\\Users\\marciodiogo.antunesd\\Desktop\\p-nik_sent\\p-nik_sent";
+    private static String personalPath = "C:\\Users\\Samuel\\Desktop\\l-yackovsky";
 
     public static void main(String[] args) throws FileNotFoundException {
         File path = new File(personalPath);
